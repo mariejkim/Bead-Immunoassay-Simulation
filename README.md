@@ -1,5 +1,5 @@
 # Bead-Immunoassay-Simulation
-Simulation of a bead-based 'sandwich' immunassay.
+Simulation of a bead-based 'sandwich' immunoassay.
 
 ## Requirements
 [Optional] If you want to save animation into a mp4 video file, the application 'FFmpeg' must downloaded.
