@@ -23,7 +23,17 @@ A bead-based 'sandwich' immunoasssay is when the solid substrate, the capture an
 
 This code shows a simluation of the components as circular particles that move in certain velocities in a 2 dimentional sapce. Through the simulation we can see how fast or how much the 'sandwich' complex is formed depending on the number of each component as well as the bead size.
 
-## 2. Running the Simulation
+## 2. Simulation setup and assumptions
+Here are some assumptions that are set to run the simulation:
+
+1. Same components will always elastically collide.
+2. Bead and dAb-fluorophore will always elastically collide.
+3. Antigen will bind to bead surface (inelastic collision), if antigen is not already bound to another bead.
+4. A bead can bind to multiple antigens, while an antigen can only bind to one bead.
+5. Antigen will bind to dAb-fluorophore, if it is not already bound to another dAb-fluorophore.
+6. Both antigen and dAb-fluorophore can be bound to only one dAb-fluorophore and antigen, respectively.
+
+## 3. Running the Simulation
 ### Initial setup of parameters
 The following parameters can be set to run the simulation.
 Component particles:
