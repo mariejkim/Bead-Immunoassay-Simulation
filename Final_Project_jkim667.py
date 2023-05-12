@@ -61,10 +61,10 @@ def init_particle_setup():
                 dAb-fluorophore: index of bound antigen and bead
 
     """
-    # fig, ax = plt.subplots(figsize=(10,10))
+    fig, ax = plt.subplots(figsize=(10,10))
 
-    # ax.set_xlim(0,frame_sz)
-    # ax.set_ylim(0,frame_sz)
+    ax.set_xlim(0,frame_sz)
+    ax.set_ylim(0,frame_sz)
 
     particles = []
     velocities = []
@@ -93,11 +93,13 @@ def init_particle_setup():
                     n += 1
 
     for particle in particles:
-        # ax.add_patch(particle)
+        ax.add_patch(particle)
         velocity_amp = speed_calibration_constant*1/rad**2
         velocity_ang = 2*np.pi*np.random.random()
-        velocities.append([velocity_amp*np.cos(velocity_ang), velocity_amp*np.sin(velocity_ang)])
-    # plt.show()    
+        velocities.append(
+            [velocity_amp*np.cos(velocity_ang), velocity_amp*np.sin(velocity_ang)]
+            )
+    plt.show()    
     return particles, velocities, status
 
 
@@ -160,7 +162,7 @@ def particle_collision():
     for i, j in particle_pairs:
         if overlap_test(particles[i], particles[j]):
 
-            # overlap_distance_modification(i, j)
+            overlap_distance_modification(i, j)
 
             p1_type, p2_type = status[i][0], status[j][0]
 
@@ -176,7 +178,7 @@ def particle_collision():
             if p1_type + p2_type == 3:
                 particle_binding2(i, j)
             
-            overlap_distance_modification(i, j)
+            # overlap_distance_modification(i, j)
 
                 
 
@@ -243,6 +245,18 @@ def total_mass(i):
 
 
 def elastic_collision_update(p1, p2, p1_mass, p2_mass, p1_vel, p2_vel):
+    """
+    Update velocity of particles that are to bounce off of each other.
+    (Elastic collision)
+    
+    Parameters
+    ----------
+    i : int
+        Particle index i
+    j : int
+        Particle index j
+
+    """
     
     n_p1_vel = (p1_mass-p2_mass)/(p1_mass+p2_mass)*p1_vel+2*p2_mass/(p1_mass+p2_mass)*p2_vel
     n_p2_vel = 2*p1_mass/(p1_mass+p2_mass)*p1_vel-(p1_mass-p2_mass)/(p1_mass+p2_mass)*p2_vel
@@ -252,6 +266,18 @@ def elastic_collision_update(p1, p2, p1_mass, p2_mass, p1_vel, p2_vel):
 
 
 def particle_binding_update(p1, p2, p1_mass, p2_mass, p1_vel, p2_vel):
+    """
+    Update velocity of particles that are to be bound to each other. 
+    (Inelastic collision)
+    
+    Parameters
+    ----------
+    i : int
+        Particle index i
+    j : int
+        Particle index j
+
+    """
     
     n_vel = (p1_mass*p1_vel+p2_mass*p2_vel)/(p1_mass+p2_mass)
 
@@ -270,6 +296,18 @@ def particle_binding_update(p1, p2, p1_mass, p2_mass, p1_vel, p2_vel):
     
 
 def syncronize_bound_particles(i, j):
+    """
+    Update velocity of all particles that are bound to each particle (i and j)
+    to the same velocity as each particle.
+    
+    Parameters
+    ----------
+    i : int
+        Particle index i
+    j : int
+        Particle index j
+
+    """
     
     i_bound_set = complete_bound_set(i)
     for index1 in i_bound_set:
@@ -301,15 +339,7 @@ def particle_elastic_collision(i, j):
     p1_vel, p2_vel = np.array(velocities[i]), np.array(velocities[j])
     
     elastic_collision_update(i, j, p1_mass, p2_mass, p1_vel, p2_vel)
-        
-    i_bound_set = complete_bound_set(i)
-    for index1 in i_bound_set:
-        velocities[index1] = velocities[i]
-    
-    j_bound_set = complete_bound_set(j)
-    for index1 in j_bound_set:
-        velocities[index1] = velocities[j]
-        
+                
     syncronize_bound_particles(i, j)
 
 
@@ -340,14 +370,6 @@ def particle_binding1(i, j):
         particle_binding_update(i, j, p1_mass, p2_mass, p1_vel, p2_vel)
     else:        
         elastic_collision_update(i, j, p1_mass, p2_mass, p1_vel, p2_vel)
-        
-    i_bound_set = complete_bound_set(i)
-    for index1 in i_bound_set:
-        velocities[index1] = velocities[i]
-    
-    j_bound_set = complete_bound_set(j)
-    for index1 in j_bound_set:
-        velocities[index1] = velocities[j]
         
     syncronize_bound_particles(i, j)
 
@@ -383,14 +405,6 @@ def particle_binding2(i,j): # Antigen (i) and dAb-Fluorophore (j) binding
             elastic_collision_update(i, j, p1_mass, p2_mass, p1_vel, p2_vel)
     else:        
         elastic_collision_update(i, j, p1_mass, p2_mass, p1_vel, p2_vel)
-
-    i_bound_set = complete_bound_set(i)
-    for index1 in i_bound_set:
-        velocities[index1] = velocities[i]
-    
-    j_bound_set = complete_bound_set(j)
-    for index1 in j_bound_set:
-        velocities[index1] = velocities[j]
     
     syncronize_bound_particles(i, j)
 
@@ -490,7 +504,7 @@ if __name__ == '__main__':
     bead_rad = 75
     bead_color = [(0.45,0.65,0.78), (0.19,0.35,0.52)]
 
-    antigen_num = 40
+    antigen_num = 20
     antigen_color = [(0.99,0.56,0.20), (0.87,0.12,0.10)]
 
     dAb_num = 40
@@ -502,7 +516,7 @@ if __name__ == '__main__':
         [dAb_num, 7, dAb_color]
         ]   
 
-    frame_sz = 450
+    frame_sz = 400
 
     speed_calibration_constant = 10
     
@@ -515,7 +529,9 @@ if __name__ == '__main__':
     ax2.set_ylim(0,frame_sz)
     
     # Run animation (update particles)
-    anim = animation.FuncAnimation(fig2, animate, frames=9000, interval=2, blit=True, repeat=False, save_count=20000)
+    anim = animation.FuncAnimation(
+        fig2, animate, frames=200, interval=2, blit=True, repeat=True, save_count=200
+        )
     
     '''
     ### Save and/or show animation ###
@@ -532,7 +548,9 @@ if __name__ == '__main__':
     right away.
     
     '''
-    save_and_show_animation(anim, save=False, fps=50, filetype='mp4', filename='Bead_Immunoassay_Sim.mp4')
+    save_and_show_animation(
+        anim, save=False, fps=5, filetype='mp4', filename='Bead_immunoassay.mp4'
+        )
     
     # Counting the number of 'sandwich' complexes formed after simulation.
     complex_count = complex_count_update()
